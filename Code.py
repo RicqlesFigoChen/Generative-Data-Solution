@@ -6,19 +6,19 @@ import time
 # COMMAND ----------
 
 openai.api_type = 'azure'
-openai.api_key = 'a46a37b865a742e2bf138150ff0add57'
-openai.api_base = 'https://openaihackathonteamfigo.openai.azure.com/'
+openai.api_key = '******************'
+openai.api_base = 'https://openai*****.openai.azure.com/'
 openai.api_version = "2023-05-15"
 
 # COMMAND ----------
 
 # DBTITLE 1,Data
-df_companies = spark.sql('''SELECT DISTINCT Customer_Name FROM industry_ci WHERE Industry_lvl1 = 'Industry Not Assigned' LIMIT 1000 ''')
+df_companies = spark.sql('''SELECT DISTINCT Customer_Name FROM industry_ci WHERE Industry_lvl1 = 'Industry Not Assigned' ''')
                          
 
-df_industries = spark.sql('''SELECT DISTINCT JLL_Industry_Group FROM sic_mapping WHERE JLL_Industry_Group != 'Non Classifiable' ''')
+df_industries = spark.sql('''SELECT DISTINCT Industry_Group FROM sic_mapping WHERE Industry_Group != 'Non Classifiable' ''')
 df_sub_industries = spark.sql('''SELECT DISTINCT SIC_Description FROM sic_mapping''')
-df_topcompanies = spark.sql('''
+df_top100companies = spark.sql('''
 WITH df AS (SELECT Customer_Name, SUM(total_amount_usd) 
 FROM industry_bi_final_updated
 WHERE Customer_Name NOT IN ('NO CLIENT', '-')
@@ -31,7 +31,7 @@ LIMIT 100) SELECT DISTINCT Customer_Name FROM df
 
 # DBTITLE 1,df to list
 company_list = df_companies.select('Customer_Name').rdd.flatMap(lambda x: x).collect()
-industry_list = df_industries.select('JLL_Industry_Group').rdd.flatMap(lambda x: x).collect()
+industry_list = df_industries.select('Industry_Group').rdd.flatMap(lambda x: x).collect()
 sub_industry_list = df_sub_industries.select('SIC_Description').rdd.flatMap(lambda x: x).collect()
 
 # COMMAND ----------
